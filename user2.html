@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>User2</title>
+	<link href="./experimenter.css" rel="stylesheet" />
+</head>
+<body>
+		<script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+    <div class = "first">
+        <div class = "title_on">
+            현재 발언자
+        </div>
+		<div class = "title_off">
+			다음 발언자
+        </div>
+		<div class = "title_off">
+			그 다음 발언자
+		</div>
+		<div class = "title_off">
+			more
+		</div>
+    </div>
+	<div class = "first">
+		<div class = "order_on" id="current">
+			
+		</div>
+		<div class = "order_off" id="next">
+			
+		</div>
+		<div class = "order_off" id="more">
+			
+		</div>
+		<div class = "order_off" id="number">
+			
+		</div>
+	</div>
+	<div class = "first" id= "timer">
+		당신은 유저 2입니다.
+	</div>
+	<div class = "first">
+		<input type = "button" id = "add" value = "더 듣고 싶어요" class = "three" onclick="add(2)" />
+        <div class = "padding">
+            <p></p>
+        </div>
+		<input type = "button" id = "subtract" value = "그만 듣고 싶어요" class = "three" onclick="subtract(2)"/>
+        <div class = "padding">
+            <p></p>
+        </div>
+		<input type = "button" id = "want" value = "나도 말할래요" class = "three" onclick="reserve(2)" />
+    </div>		
+    <script src="./user.js"></script>				
+</body>
+</html>
