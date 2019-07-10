@@ -28,14 +28,14 @@ firebase.database().ref().child('order').on('value', function(snapshot) {
 });
 
 speech_start.addEventListener('click', function(event){
-    firebase.database().ref().child('order').limitToFirst(1).once('value').then(function(snapshot){
-        firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).remove();
-    });
-
+    
     if (start_status == 0){
         start_status = 1;
         firebase.database().ref('/start_status').set({
             start_status: 1,
+        });
+        firebase.database().ref().child('order').limitToFirst(1).once('value').then(function(snapshot){
+            firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).remove();
         });
     }
 });
