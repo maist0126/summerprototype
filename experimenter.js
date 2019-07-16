@@ -14,6 +14,7 @@ const firebaseConfig = {
 let alarm_state = 1;
 let RemainDate = 60000;
 let start_status = 0;
+let now_user = undefined;
 
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
@@ -30,12 +31,20 @@ firebase.database().ref().child('order').on('value', function(snapshot) {
 speech_start.addEventListener('click', function(event){
     
     if (start_status == 0){
-        start_status = 1;
-        firebase.database().ref('/start_status').set({
-            start_status: 1,
-        });
-        firebase.database().ref().child('order').limitToFirst(1).once('value').then(function(snapshot){
+        firebase.database().ref().child('order').once('value').then(function(snapshot){
             firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).remove();
+            let order = [];
+            for (let key in snapshot.val()) {
+                order.push(snapshot.val()[key].username);
+            }
+            now_user = order[1];
+            firebase.database().ref('/now').set({
+                now_user: now_user,
+            });
+            start_status = 1;
+            firebase.database().ref('/start_status').set({
+                start_status: 1,
+            });
         });
     }
 });
@@ -44,6 +53,15 @@ speech_stop.addEventListener('click', function(event){
     start_status = 0;
     firebase.database().ref('/start_status').set({
         start_status: 0,
+    });
+    now_user = undefined;
+    firebase.database().ref('/now').set({
+        now_user: null,
+    });
+    firebase.database().ref().child('order').once('value').then(function(snapshot){
+        firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).set({
+            username: '없음',
+        });
     });
 });
 
@@ -56,17 +74,17 @@ function innerUsername(snapshot){
     if (order[0] != undefined){
         document.getElementById("current").innerHTML="유저 " + order[0];
     } else{
-        document.getElementById("current").innerHTML="없음";
+        document.getElementById("current").innerHTML="유저 없음";
     }
     if (order[1] != undefined){
         document.getElementById("next").innerHTML="유저 " + order[1];
     } else{
-        document.getElementById("next").innerHTML="없음";
+        document.getElementById("next").innerHTML="유저 없음";
     }
     if (order[2] != undefined){
         document.getElementById("more").innerHTML="유저 " + order[2];
     } else{
-        document.getElementById("more").innerHTML="없음";
+        document.getElementById("more").innerHTML="유저 없음";
     }
     if (number>0){
         document.getElementById("number").innerHTML="+ " + number;

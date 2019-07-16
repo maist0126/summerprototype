@@ -12,13 +12,39 @@ const firebaseConfig = {
 };
 
 let alarm_state = 1;
-let RemainDate = 60000;
 let start_status = 0;
+let msg_state = 0;
+let msg_state2 = 0;
 let tid;
+let RemainDate = 60000;
+let arc;
+let ArchiveTime = 0;
+let now_user = undefined;
 
 let myTimer;
 
+let datatable = [
+    ["Element", "Density", { role: "style" } ],
+    ["유저 1", 0, "#b87333"],
+    ["유저 2", 0, "gold"],
+    ["유저 3", 0, "#b87333"],
+    ["유저 4", 0, "gold"],
+    ["유저 5", 0, "#b87333"],
+    ["유저 6", 0, "gold"]
+];
+
 firebase.initializeApp(firebaseConfig);
+firebase.database().ref().child('now').once('value').then(function(snapshot) {
+    now_user = snapshot.val().now_user;     
+});
+
+firebase.database().ref().child('now').on('value', function(snapshot) {
+    now_user = snapshot.val().now_user;     
+});
+
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
     innerUsername(snapshot);
 });
@@ -51,55 +77,45 @@ firebase.database().ref().child('add').on('value', function(snapshot) {
     }
 });
 
-firebase.database().ref().child('subtract').once('value').then(function(snapshot) {
-    if (start_status == 1){
-        let subtract = 0;
-        for (let key in snapshot.val()) {
-            subtract = subtract + 1;
-        }
-        RemainDate = RemainDate - subtract*5000;
-        changecolor('#ff3e98');
-        firebase.database().ref().child('subtract').set(null);
-    }
-});
 
-firebase.database().ref().child('subtract').on('value', function(snapshot) {
-    if (start_status == 1){
-        let subtract = 0;
-        for (let key in snapshot.val()) {
-            subtract = subtract + 1;
-        }
-        RemainDate = RemainDate - subtract*5000;
-        changecolor('#ff3e98');
-        firebase.database().ref().child('subtract').set(null);
-    }
-});
-
-firebase.database().ref().child('start_status').once('value').then(function(snapshot) {
-    console.log(snapshot.val().start_status);
-    if (snapshot.val().start_status == 1){
-        start_status = 1;
-        RemainDate = 60000;
-        tid=setInterval('msg_time()',100);
-    } else if (snapshot.val().start_status == 0) {
-        clearInterval(tid);
-        start_status = 0;
-    }
-});
 
 firebase.database().ref().child('start_status').on('value', function(snapshot) {
     console.log(snapshot.val().start_status);
     if (snapshot.val().start_status == 1){
+        document.all.timer.innerHTML = "";
         start_status = 1;
         RemainDate = 60000;
-        tid=setInterval('msg_time()',100);
+        ArchiveTime = 0;
+        arc=setInterval('arc_time()',100);
+        if (msg_state == 1){
+            if (msg_state2 == 0){
+                tid=setInterval('msg_time()', 100);
+                msg_state2 = 1;
+            }
+        }
     } else if (snapshot.val().start_status == 0) {
         clearInterval(tid);
+        clearInterval(arc);
+        msg_state2 = 0;
+        ArchiveTime = datatable[now_user][1] + ArchiveTime/1000;
+        datatable[now_user][1] = ArchiveTime;
+        drawChart();
+        firebase.database().ref('/data/0').set({
+            time: datatable,
+        });
+        firebase.database().ref('/data/'+now_user).set({
+            time: ArchiveTime,
+        });
         start_status = 0;
     }
 });
 
 function innerUsername(snapshot){
+    if (snapshot.val() == null){
+        firebase.database().ref('/order').push({
+            username: '없음',
+        });
+    }
     let order = [];
 	for (let key in snapshot.val()) {
 		order.push(snapshot.val()[key].username);
@@ -108,17 +124,25 @@ function innerUsername(snapshot){
     if (order[0] != undefined){
         document.getElementById("current").innerHTML="유저 " + order[0];
     } else{
-        document.getElementById("current").innerHTML="없음";
+        document.getElementById("current").innerHTML="유저 없음";
     }
     if (order[1] != undefined){
+        msg_state = 1;
+        if (start_status == 1){
+            if (msg_state2 == 0){
+                tid=setInterval('msg_time()', 100);
+                msg_state2 = 1;
+            }
+        }
         document.getElementById("next").innerHTML="유저 " + order[1];
     } else{
-        document.getElementById("next").innerHTML="없음";
+        msg_state = 0;
+        document.getElementById("next").innerHTML="유저 없음";
     }
     if (order[2] != undefined){
         document.getElementById("more").innerHTML="유저 " + order[2];
     } else{
-        document.getElementById("more").innerHTML="없음";
+        document.getElementById("more").innerHTML="유저 없음";
     }
     if (number>0){
         document.getElementById("number").innerHTML="+ " + number;
@@ -143,6 +167,7 @@ function msg_time() {
     
 	if (RemainDate <= 0) {      
         clearInterval(tid);
+        msg_state2 = 0;
         start_status = 0;
         firebase.database().ref('/start_status').set({
             start_status: 0,
@@ -161,6 +186,10 @@ function msg_time() {
 	else{
 	    RemainDate = RemainDate - 100;
     }
+}
+
+function arc_time() {
+	ArchiveTime = ArchiveTime + 100;
 }
 
 function play() { 
@@ -182,4 +211,25 @@ function changecolor(color){
         el.style.backgroundColor = '#e6e6e6';
         el.style.color = '#000000';
         }, 1000);
+}
+
+function drawChart() {
+    var data = google.visualization.arrayToDataTable(datatable);
+    var view = new google.visualization.DataView(data);
+    view.setColumns([0, 1,
+                    { calc: "stringify",
+                        sourceColumn: 1,
+                        type: "string",
+                        role: "annotation" },
+                    2]);
+
+    var options = {
+        title: "발언 누적 시간 그래프",
+        width: 1200,
+        height: 400,
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+    };
+    var chart = new google.visualization.BarChart(document.getElementById("chart_div"));
+    chart.draw(view, options);
 }

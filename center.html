@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Experimenter</title>
+	<title>Center</title>
 	<audio id='audio_play' src='./src/sound.mp3'></audio>
 	<link href="./experimenter.css" rel="stylesheet" />
 </head>
 <body>
-		<script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <div class = "first">
         <div class = "title_on">
             현재 발언자
@@ -36,8 +37,11 @@
 			
 		</div>
 	</div>
-	<div class = "first" id= "timer">
-		00:01:00
+	<div class="first">
+		<div id="timer"></div>
+	</div>
+	<div class="first">
+		<div id="chart_div"></div>
 	</div>
     <script src="./center.js"></script>				
 </body>

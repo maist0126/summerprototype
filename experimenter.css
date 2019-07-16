@@ -78,6 +78,17 @@
     text-align: center;
 }
 
+.alert{
+    margin-top: 20px; 
+    margin-bottom: 40px;
+    padding-top: 20px; 
+    padding-bottom: 20px;
+    font-weight: 500; 
+    background-color: #e6e6e6; 
+    font-size: 60px;
+    text-align: center;
+}
+
 .speech{
     color: #ffffff; 
     background-color: black; 
