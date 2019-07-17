@@ -16,7 +16,6 @@ let alarm_state = 1;
 let RemainDate = 60000;
 let start_status = 0;
 let now_user = undefined;
-
 document.addEventListener('click', function enableNoSleep() {
     document.removeEventListener('click', enableNoSleep, false);
     noSleep.enable();
@@ -102,3 +101,5 @@ function innerUsername(snapshot){
 function reset(){
     firebase.database().ref().set(null);
 }
+
+
