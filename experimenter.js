@@ -33,6 +33,14 @@ firebase.database().ref().child('order').on('value', function(snapshot) {
     innerUsername(snapshot);
 });
 
+firebase.database().ref().child('start_status').on('value', function(snapshot) {
+    if (snapshot.val().start_status == 1){
+        start_status = 1;
+    } else if (snapshot.val().start_status == 0) {
+        start_status = 0;
+    }
+});
+
 speech_start.addEventListener('click', function(event){
     
     if (start_status == 0){

@@ -192,12 +192,20 @@ function msg_time() {
         firebase.database().ref('/start_status').set({
             start_status: 0,
         });
+        now_user = undefined;
+        firebase.database().ref('/now').set({
+            now_user: null,
+        });
+        firebase.database().ref().child('order').once('value').then(function(snapshot){
+            firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).set({
+                username: '없음',
+            });
+        });
 	} else if (RemainDate >= 1000*16) {
 		alarm_state = 1;
 		RemainDate = RemainDate - 100;
 	} else if (RemainDate <= 1000*15) {
 		if (alarm_state == 1){
-            console.log("what");
 		    play();
 		    alarm_state = 0;
 		}
