@@ -1,3 +1,9 @@
-node_modules/
+node_modules/chart.js
+node_modules/chartjs-color
+node_modules/chartjs-color-string
+node_modules/color-convert
+node_modules/color-name
+node_modules/moment
+
 package-lock.json
 # assume all js in static dir are compiled, so ignore
