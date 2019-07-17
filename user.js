@@ -8,8 +8,12 @@ const firebaseConfig = {
     appId: "1:939837361800:web:b2f180e51fcf2dce"
 };
 let now_user = undefined;
+let last_user = undefined;
 let myTimer;
 let start_status = 0;
+
+navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+
 
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
@@ -20,11 +24,15 @@ firebase.database().ref().child('order').on('value', function(snapshot) {
 });
 
 firebase.database().ref().child('now').once('value').then(function(snapshot) {
-    now_user = snapshot.val().now_user;     
+    if (snapshot.val().now_user != null){
+        now_user = snapshot.val().now_user;  
+    }   
 });
 
 firebase.database().ref().child('now').on('value', function(snapshot) {
-    now_user = snapshot.val().now_user;     
+    if (snapshot.val().now_user != null){
+        now_user = snapshot.val().now_user;  
+    }      
 });
 
 firebase.database().ref().child('subtract').on('value', function(snapshot) {
@@ -65,7 +73,7 @@ function subtract(username){
 
 
 function reserve(username){
-    if (now_user != username){
+    if (last_user != username){
         firebase.database().ref('/order').push({
             username: username,
         });
@@ -77,7 +85,9 @@ function innerUsername(snapshot){
 	for (let key in snapshot.val()) {
 		order.push(snapshot.val()[key].username);
 	}
-	let number = order.length - 3;
+    let number = order.length - 3;
+    last_user = order[order.length-1];
+    console.log(last_user);
     if (order[0] != undefined){
         document.getElementById("current").innerHTML="유저 " + order[0];
     } else{
@@ -105,8 +115,22 @@ function changecolor(color){
     var el = document.getElementById(`user${now_user}`);
     el.style.backgroundColor = `${color}`;
     el.style.color = '#ffffff';
+    vibrate();
     myTimer = setTimeout(function() {
         el.style.backgroundColor = '#e6e6e6';
         el.style.color = '#000000';
+        vibrate_stop();
         }, 1000);
+}
+
+function vibrate() {
+    if (navigator.vibrate) {
+        navigator.vibrate(20000); // 진동을 울리게 한다. 1000ms = 1초
+    }
+    else {
+    }
+}
+
+function vibrate_stop() {
+    navigator.vibrate(0);
 }

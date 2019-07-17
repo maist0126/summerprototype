@@ -24,7 +24,7 @@ let now_user = undefined;
 let myTimer;
 
 let datatable = [
-    ["Element", "Density", { role: "style" } ],
+    ["Element", "Time", { role: "style" } ],
     ["유저 1", 0, "#b87333"],
     ["유저 2", 0, "gold"],
     ["유저 3", 0, "#b87333"],
@@ -34,6 +34,15 @@ let datatable = [
 ];
 
 firebase.initializeApp(firebaseConfig);
+firebase.database().ref().child('data').once('value').then(function(snapshot) {
+    datatable[1][1] = snapshot.val()[0].user1; 
+    datatable[2][1] = snapshot.val()[0].user2; 
+    datatable[3][1] = snapshot.val()[0].user3;    
+    datatable[4][1] = snapshot.val()[0].user4; 
+    datatable[5][1] = snapshot.val()[0].user5; 
+    datatable[6][1] = snapshot.val()[0].user6; 
+    google.charts.setOnLoadCallback(drawChart);
+});
 firebase.database().ref().child('now').once('value').then(function(snapshot) {
     now_user = snapshot.val().now_user;     
 });
@@ -101,7 +110,12 @@ firebase.database().ref().child('start_status').on('value', function(snapshot) {
         datatable[now_user][1] = ArchiveTime;
         drawChart();
         firebase.database().ref('/data/0').set({
-            time: datatable,
+            user1: datatable[1][1],
+            user2: datatable[2][1],
+            user3: datatable[3][1],
+            user4: datatable[4][1],
+            user5: datatable[5][1],
+            user6: datatable[6][1],
         });
         firebase.database().ref('/data/'+now_user).set({
             time: ArchiveTime,
