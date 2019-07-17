@@ -10,11 +10,17 @@ const firebaseConfig = {
     messagingSenderId: "939837361800",
     appId: "1:939837361800:web:b2f180e51fcf2dce"
 };
+const noSleep = new NoSleep();
 
 let alarm_state = 1;
 let RemainDate = 60000;
 let start_status = 0;
 let now_user = undefined;
+
+document.addEventListener('click', function enableNoSleep() {
+    document.removeEventListener('click', enableNoSleep, false);
+    noSleep.enable();
+  }, false);
 
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('order').once('value').then(function(snapshot) {

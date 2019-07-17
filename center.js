@@ -10,6 +10,7 @@ const firebaseConfig = {
     messagingSenderId: "939837361800",
     appId: "1:939837361800:web:b2f180e51fcf2dce"
 };
+const noSleep = new NoSleep();
 
 let alarm_state = 1;
 let start_status = 0;
@@ -32,6 +33,11 @@ let datatable = [
     ["유저 5", 0, "#b87333"],
     ["유저 6", 0, "gold"]
 ];
+
+document.addEventListener('click', function enableNoSleep() {
+    document.removeEventListener('click', enableNoSleep, false);
+    noSleep.enable();
+  }, false);
 
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('data').once('value').then(function(snapshot) {

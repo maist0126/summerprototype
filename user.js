@@ -11,10 +11,15 @@ let now_user = undefined;
 let last_user = undefined;
 let myTimer;
 let start_status = 0;
+const noSleep = new NoSleep();
 
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
 
-
+document.addEventListener('click', function enableNoSleep() {
+    document.removeEventListener('click', enableNoSleep, false);
+    noSleep.enable();
+  }, false);
+  
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
     innerUsername(snapshot);
