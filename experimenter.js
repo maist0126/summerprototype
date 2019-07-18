@@ -81,23 +81,23 @@ speech_stop.addEventListener('click', function(event){
 function innerUsername(snapshot){
     let order = [];
 	for (let key in snapshot.val()) {
-		order.push(snapshot.val()[key].username);
+		order.push(snapshot.val()[key].nickname);
     }
     let number = order.length - 3;
     if (order[0] != undefined){
-        document.getElementById("current").innerHTML="유저 " + order[0];
+        document.getElementById("current").innerHTML="" + order[0];
     } else{
-        document.getElementById("current").innerHTML="유저 없음";
+        document.getElementById("current").innerHTML="없음";
     }
     if (order[1] != undefined){
-        document.getElementById("next").innerHTML="유저 " + order[1];
+        document.getElementById("next").innerHTML="" + order[1];
     } else{
-        document.getElementById("next").innerHTML="유저 없음";
+        document.getElementById("next").innerHTML="없음";
     }
     if (order[2] != undefined){
-        document.getElementById("more").innerHTML="유저 " + order[2];
+        document.getElementById("more").innerHTML="" + order[2];
     } else{
-        document.getElementById("more").innerHTML="유저 없음";
+        document.getElementById("more").innerHTML="없음";
     }
     if (number>0){
         document.getElementById("number").innerHTML="+ " + number;

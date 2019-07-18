@@ -57,6 +57,26 @@ firebase.database().ref().child('now').on('value', function(snapshot) {
     now_user = snapshot.val().now_user;     
 });
 
+firebase.database().ref().child('nickname').once('value').then(function(snapshot) {
+    datatable[1][0] = snapshot.val()[1]; 
+    datatable[2][0] = snapshot.val()[2]; 
+    datatable[3][0] = snapshot.val()[3];    
+    datatable[4][0] = snapshot.val()[4]; 
+    datatable[5][0] = snapshot.val()[5]; 
+    datatable[6][0] = snapshot.val()[6]; 
+    google.charts.setOnLoadCallback(drawChart);     
+});
+
+firebase.database().ref().child('nickname').on('value', function(snapshot) {
+    datatable[1][0] = snapshot.val()[1]; 
+    datatable[2][0] = snapshot.val()[2]; 
+    datatable[3][0] = snapshot.val()[3];    
+    datatable[4][0] = snapshot.val()[4]; 
+    datatable[5][0] = snapshot.val()[5]; 
+    datatable[6][0] = snapshot.val()[6]; 
+    google.charts.setOnLoadCallback(drawChart);  
+});
+
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
@@ -134,17 +154,18 @@ function innerUsername(snapshot){
     if (snapshot.val() == null){
         firebase.database().ref('/order').push({
             username: '없음',
+            nickname: '없음'
         });
     }
     let order = [];
 	for (let key in snapshot.val()) {
-		order.push(snapshot.val()[key].username);
+		order.push(snapshot.val()[key].nickname);
     }
     let number = order.length - 3;
     if (order[0] != undefined){
-        document.getElementById("current").innerHTML="유저 " + order[0];
+        document.getElementById("current").innerHTML="" + order[0];
     } else{
-        document.getElementById("current").innerHTML="유저 없음";
+        document.getElementById("current").innerHTML="없음";
     }
     if (order[1] != undefined){
         msg_state = 1;
@@ -154,15 +175,15 @@ function innerUsername(snapshot){
                 msg_state2 = 1;
             }
         }
-        document.getElementById("next").innerHTML="유저 " + order[1];
+        document.getElementById("next").innerHTML="" + order[1];
     } else{
         msg_state = 0;
-        document.getElementById("next").innerHTML="유저 없음";
+        document.getElementById("next").innerHTML="없음";
     }
     if (order[2] != undefined){
-        document.getElementById("more").innerHTML="유저 " + order[2];
+        document.getElementById("more").innerHTML="" + order[2];
     } else{
-        document.getElementById("more").innerHTML="유저 없음";
+        document.getElementById("more").innerHTML="없음";
     }
     if (number>0){
         document.getElementById("number").innerHTML="+ " + number;

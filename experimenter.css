@@ -133,7 +133,23 @@
     
 }
 
+#save{
+    color: #ffffff; 
+    background-color: rgb(78, 78, 78); 
+    font-weight: 500; 
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+    
+}
+
 .padding{
     float: left;
     width: 1%;
+}
+
+#nickname{
+    width: 300px;
+    font-size: 30px;
 }

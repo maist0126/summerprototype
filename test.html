@@ -19,6 +19,9 @@ video.style.cssText = "-moz-transform: scale(-1, 1); \
 -webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
 transform: scale(-1, 1); filter: FlipH;";
 var canvas = document.querySelector('#canvasElement');
+canvas.style.cssText = "-moz-transform: scale(-1, 1); \
+-webkit-transform: scale(-1, 1); -o-transform: scale(-1, 1); \
+transform: scale(-1, 1); filter: FlipH;";
 var ctx = canvas.getContext('2d');
 var localMediaStream = null;
 
@@ -38,10 +41,11 @@ function videoError(e){
   
 
 function snapshot() {
-
+	console.log("aw");
 	canvas.width = video.videoWidth;
   	canvas.height = video.videoHeight;
 	ctx.drawImage(video, 0, 0);
+
   // "image/webp" works in Chrome.
   // Other browsers will fall back to image/png.
 	document.querySelector('#imgElement').src = canvas.toDataURL('image/webp');

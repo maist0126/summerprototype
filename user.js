@@ -11,6 +11,7 @@ let now_user = undefined;
 let last_user = undefined;
 let myTimer;
 let start_status = 0;
+let user_nickname = undefined;
 const noSleep = new NoSleep();
 
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
@@ -19,7 +20,7 @@ document.addEventListener('click', function enableNoSleep() {
     document.removeEventListener('click', enableNoSleep, false);
     noSleep.enable();
   }, false);
-  
+
 firebase.initializeApp(firebaseConfig);
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
     innerUsername(snapshot);
@@ -81,32 +82,35 @@ function reserve(username){
     if (last_user != username){
         firebase.database().ref('/order').push({
             username: username,
+            nickname: user_nickname
         });
     }
 }
 
 function innerUsername(snapshot){
     let order = [];
+    let check = [];
 	for (let key in snapshot.val()) {
-		order.push(snapshot.val()[key].username);
+        order.push(snapshot.val()[key].nickname);
+        check.push(snapshot.val()[key].username);
 	}
     let number = order.length - 3;
-    last_user = order[order.length-1];
+    last_user = check[check.length-1];
     console.log(last_user);
     if (order[0] != undefined){
-        document.getElementById("current").innerHTML="유저 " + order[0];
+        document.getElementById("current").innerHTML="" + order[0];
     } else{
-        document.getElementById("current").innerHTML="유저 없음";
+        document.getElementById("current").innerHTML="없음";
     }
     if (order[1] != undefined){
-        document.getElementById("next").innerHTML="유저 " + order[1];
+        document.getElementById("next").innerHTML="" + order[1];
     } else{
-        document.getElementById("next").innerHTML="유저 없음";
+        document.getElementById("next").innerHTML="없음";
     }
     if (order[2] != undefined){
-        document.getElementById("more").innerHTML="유저 " + order[2];
+        document.getElementById("more").innerHTML="" + order[2];
     } else{
-        document.getElementById("more").innerHTML="유저 없음";
+        document.getElementById("more").innerHTML="없음";
     }
     if (number>0){
         document.getElementById("number").innerHTML="+ " + number;
@@ -138,4 +142,13 @@ function vibrate() {
 
 function vibrate_stop() {
     navigator.vibrate(0);
+}
+
+function nickname(username) {
+    user_nickname = document.getElementById("nickname").value;
+    document.getElementById("nickname").remove();
+    document.getElementById("save").remove();
+    document.getElementById("user"+username).innerHTML= `${user_nickname}`
+    firebase.database().ref('/nickname/'+username).set(user_nickname);
+
 }
