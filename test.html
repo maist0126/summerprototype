@@ -1,35 +1,56 @@
-<script type="text/javascript" >
+<style>
+video {
+width:500px;
+height:500px;
+border:1px solid blue;
 
-// 작동되는 진동 메소드가 다르므로 통합
-navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+}
+</style>
 
-function vibrate() {
-if (navigator.vibrate) {
-navigator.vibrate(20000); // 진동을 울리게 한다. 1000ms = 1초
-}
-else {
-alert("진동을 지원하지 않는 기종 입니다.");
-}
-}
-function vibratearray() {
+<video autoplay='true' id='videoElement'>
+</video>
 
-if (navigator.vibrate) {
-// 배열로도 가능하다. 진동은 SOS 모스부호
-navigator.vibrate([100,30,100,30,100,200,200,30,200,30,200,200,100,30,100,30,100]);
-}
-else
-{
-alert("진동을 지원하지 않는 기종 입니다.");
-}
+<img id='imgElement' src="">
+<canvas id='canvasElement' style="display:none;"></canvas>
+<script>
+
+var video=document.querySelector("#videoElement");
+var canvas = document.querySelector('#canvasElement');
+var ctx = canvas.getContext('2d');
+var localMediaStream = null;
+
+navigator.getUserMedia=navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia||navigator.msGetUserMedia||navigator.oGetUserMedia;
+
+if(navigator.getUserMedia){
+	navigator.getUserMedia({video:true},handleVideo,videoError);
 }
 
-function stop() {
-navigator.vibrate(0);
+function handleVideo(stream){
+	video.srcObject = stream;
 }
+
+function videoError(e){ 
+}
+
+  
+
+function snapshot() {
+
+	canvas.width = video.videoWidth;
+  	canvas.height = video.videoHeight;
+	ctx.drawImage(video, 0, 0);
+  // "image/webp" works in Chrome.
+  // Other browsers will fall back to image/png.
+	document.querySelector('#imgElement').src = canvas.toDataURL('image/webp');
+
+}
+
+video.addEventListener('click', snapshot, false);
+
+// // Not showing vendor prefixes or code that works cross-browser.
+// navigator.getUserMedia({video: true}, function(stream) {
+// video.src = window.URL.createObjectURL(stream);
+// localMediaStream = stream;
+// }, errorCallback);
 
 </script>
-
-<button type="button" onclick="vibrate()" > 진동 시작 </button> <br />
-<button type="button" onclick="vibratearray()" > SOS 진동 시작 </button> <br />
-<button type="button" onclick="stop()" > 진동 중지 </button>
-
