@@ -12,22 +12,25 @@ const firebaseConfig = {
 };
 const noSleep = new NoSleep();
 
-let alarm_state = 1;
 let RemainDate = 60000;
 let start_status = 0;
 let now_user = undefined;
+let now_user_nickname = undefined;
+
 document.addEventListener('click', function enableNoSleep() {
     document.removeEventListener('click', enableNoSleep, false);
     noSleep.enable();
   }, false);
 
 firebase.initializeApp(firebaseConfig);
+
 firebase.database().ref().child('order').once('value').then(function(snapshot) {
     innerUsername(snapshot);
     firebase.database().ref('/start_status').set({
         start_status: 0,
     });
 });
+
 
 firebase.database().ref().child('order').on('value', function(snapshot) {
     innerUsername(snapshot);
@@ -45,19 +48,28 @@ speech_start.addEventListener('click', function(event){
     
     if (start_status == 0){
         firebase.database().ref().child('order').once('value').then(function(snapshot){
-            firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).remove();
             let order = [];
+            let check = [];
             for (let key in snapshot.val()) {
-                order.push(snapshot.val()[key].username);
+                check.push(snapshot.val()[key].username);
+                order.push(snapshot.val()[key].nickname);
             }
-            now_user = order[1];
+            now_user = check[0];
+            now_user_nickname = order[0];
             firebase.database().ref('/now').set({
-                now_user: now_user,
+                username: now_user,
+                nickname: now_user_nickname
             });
+            firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).remove();
             start_status = 1;
             firebase.database().ref('/start_status').set({
                 start_status: 1,
             });
+            if (now_user_nickname != undefined){
+                document.getElementById("current").innerHTML="" + now_user_nickname;
+            } else{
+                document.getElementById("current").innerHTML="없음";
+            }
         });
     }
 });
@@ -68,14 +80,16 @@ speech_stop.addEventListener('click', function(event){
         start_status: 0,
     });
     now_user = undefined;
+    now_user_nickname = undefined;
     firebase.database().ref('/now').set({
-        now_user: null,
+        username: null,
+        nickname: '없음'
     });
-    firebase.database().ref().child('order').once('value').then(function(snapshot){
-        firebase.database().ref().child('order/' + Object.keys(snapshot.val())[0]).set({
-            username: '없음',
-        });
-    });
+    if (now_user_nickname != undefined){
+        document.getElementById("current").innerHTML="" + now_user_nickname;
+    } else{
+        document.getElementById("current").innerHTML="없음";
+    }
 });
 
 function innerUsername(snapshot){
@@ -83,19 +97,15 @@ function innerUsername(snapshot){
 	for (let key in snapshot.val()) {
 		order.push(snapshot.val()[key].nickname);
     }
-    let number = order.length - 3;
+    let number = order.length - 2;
+    
     if (order[0] != undefined){
-        document.getElementById("current").innerHTML="" + order[0];
-    } else{
-        document.getElementById("current").innerHTML="없음";
-    }
-    if (order[1] != undefined){
-        document.getElementById("next").innerHTML="" + order[1];
+        document.getElementById("next").innerHTML="" + order[0];
     } else{
         document.getElementById("next").innerHTML="없음";
     }
-    if (order[2] != undefined){
-        document.getElementById("more").innerHTML="" + order[2];
+    if (order[1] != undefined){
+        document.getElementById("more").innerHTML="" + order[1];
     } else{
         document.getElementById("more").innerHTML="없음";
     }

@@ -6,13 +6,22 @@ border:1px solid blue;
 
 }
 </style>
-
+<script src="https://www.gstatic.com/firebasejs/5.11.0/firebase.js"></script>
 <video autoplay='true' id='videoElement'>
 </video>
 
 <img id='imgElement' src="">
 <canvas id='canvasElement' style="display:none;"></canvas>
 <script>
+const firebaseConfig = {
+    apiKey: "AIzaSyDqrxVLbCj9D1NyPziKNyrmzhegXNpCI6A",
+    authDomain: "summer-iw.firebaseapp.com",
+    databaseURL: "https://summer-iw.firebaseio.com",
+    projectId: "summer-iw",
+    storageBucket: "gs://summer-iw.appspot.com/",
+    messagingSenderId: "939837361800",
+    appId: "1:939837361800:web:b2f180e51fcf2dce"
+};
 
 var video=document.querySelector("#videoElement");
 video.style.cssText = "-moz-transform: scale(-1, 1); \
@@ -25,6 +34,7 @@ transform: scale(-1, 1); filter: FlipH;";
 var ctx = canvas.getContext('2d');
 var localMediaStream = null;
 
+firebase.initializeApp(firebaseConfig);
 navigator.getUserMedia=navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia||navigator.msGetUserMedia||navigator.oGetUserMedia;
 
 if(navigator.getUserMedia){
@@ -45,6 +55,7 @@ function snapshot() {
 	canvas.width = video.videoWidth;
   	canvas.height = video.videoHeight;
 	ctx.drawImage(video, 0, 0);
+	firebase.storage().ref().put(canvas);
 
   // "image/webp" works in Chrome.
   // Other browsers will fall back to image/png.

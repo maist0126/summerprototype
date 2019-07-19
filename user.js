@@ -12,6 +12,8 @@ let last_user = undefined;
 let myTimer;
 let start_status = 0;
 let user_nickname = undefined;
+let now_user_nickname = undefined;
+let worst_user = undefined;
 const noSleep = new NoSleep();
 
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
@@ -28,17 +30,31 @@ firebase.database().ref().child('order').once('value').then(function(snapshot) {
 firebase.database().ref().child('order').on('value', function(snapshot) {
     innerUsername(snapshot);
 });
+firebase.database().ref().child('worst').once('value').then(function(snapshot) {
+    worst_user = snapshot.val().username;
+});
+firebase.database().ref().child('worst').on('value', function(snapshot) {
+    worst_user = snapshot.val().username;
+});
 
 firebase.database().ref().child('now').once('value').then(function(snapshot) {
-    if (snapshot.val().now_user != null){
-        now_user = snapshot.val().now_user;  
-    }   
+    now_user = snapshot.val().username;  
+    now_user_nickname = snapshot.val().nickname; 
+    if (now_user_nickname != undefined){
+        document.getElementById("current").innerHTML="" + now_user_nickname;
+    } else{
+        document.getElementById("current").innerHTML="없음";
+    } 
 });
 
 firebase.database().ref().child('now').on('value', function(snapshot) {
-    if (snapshot.val().now_user != null){
-        now_user = snapshot.val().now_user;  
-    }      
+    now_user = snapshot.val().username;  
+    now_user_nickname = snapshot.val().nickname;   
+    if (now_user_nickname != undefined){
+        document.getElementById("current").innerHTML="" + now_user_nickname;
+    } else{
+        document.getElementById("current").innerHTML="없음";
+    } 
 });
 
 firebase.database().ref().child('subtract').on('value', function(snapshot) {
@@ -79,12 +95,18 @@ function subtract(username){
 
 
 function reserve(username){
+    if(worst_user == username){
+        firebase.database().ref('/order/!a').set({
+            username: username,
+            nickname: user_nickname
+        });
+    }
     if (last_user != username){
         firebase.database().ref('/order').push({
             username: username,
             nickname: user_nickname
         });
-    }
+    } 
 }
 
 function innerUsername(snapshot){
@@ -94,21 +116,17 @@ function innerUsername(snapshot){
         order.push(snapshot.val()[key].nickname);
         check.push(snapshot.val()[key].username);
 	}
-    let number = order.length - 3;
+    let number = order.length - 2;
     last_user = check[check.length-1];
     console.log(last_user);
+    
     if (order[0] != undefined){
-        document.getElementById("current").innerHTML="" + order[0];
-    } else{
-        document.getElementById("current").innerHTML="없음";
-    }
-    if (order[1] != undefined){
-        document.getElementById("next").innerHTML="" + order[1];
+        document.getElementById("next").innerHTML="" + order[0];
     } else{
         document.getElementById("next").innerHTML="없음";
     }
-    if (order[2] != undefined){
-        document.getElementById("more").innerHTML="" + order[2];
+    if (order[1] != undefined){
+        document.getElementById("more").innerHTML="" + order[1];
     } else{
         document.getElementById("more").innerHTML="없음";
     }
