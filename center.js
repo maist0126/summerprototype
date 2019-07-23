@@ -106,7 +106,6 @@ firebase.database().ref().child('add').once('value').then(function(snapshot) {
         for (let key in snapshot.val()) {
             add = add + 1;
         }
-        RemainDate = RemainDate + add*5000;
         changecolor('#0060ff');
         firebase.database().ref().child('add').set(null);
     }
@@ -118,7 +117,6 @@ firebase.database().ref().child('add').on('value', function(snapshot) {
         for (let key in snapshot.val()) {
             add = add + 1;
         }
-        RemainDate = RemainDate + add*5000;
         changecolor('#0060ff');
         firebase.database().ref().child('add').set(null);
     }
