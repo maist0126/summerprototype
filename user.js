@@ -14,6 +14,7 @@ let start_status = 0;
 let user_nickname = undefined;
 let now_user_nickname = undefined;
 let worst_user = undefined;
+let worst_time = undefined;
 const noSleep = new NoSleep();
 
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
@@ -32,9 +33,11 @@ firebase.database().ref().child('order').on('value', function(snapshot) {
 });
 firebase.database().ref().child('worst').once('value').then(function(snapshot) {
     worst_user = snapshot.val().username;
+    worst_time = snapshot.val().time;
 });
 firebase.database().ref().child('worst').on('value', function(snapshot) {
     worst_user = snapshot.val().username;
+    worst_time = snapshot.val().time;
 });
 
 firebase.database().ref().child('now').once('value').then(function(snapshot) {
@@ -96,10 +99,12 @@ function subtract(username){
 
 function reserve(username){
     if(worst_user == username){
-        firebase.database().ref('/order/!a').set({
-            username: username,
-            nickname: user_nickname
-        });
+        if(worst_time != 0){
+            firebase.database().ref('/order/!a').set({
+                username: username,
+                nickname: user_nickname
+            });
+        }
     }
     if (last_user != username){
         firebase.database().ref('/order').push({
@@ -118,7 +123,6 @@ function innerUsername(snapshot){
 	}
     let number = order.length - 2;
     last_user = check[check.length-1];
-    console.log(last_user);
     
     if (order[0] != undefined){
         document.getElementById("next").innerHTML="" + order[0];

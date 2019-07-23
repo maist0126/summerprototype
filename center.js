@@ -59,7 +59,6 @@ firebase.database().ref().child('now').once('value').then(function(snapshot) {
         document.getElementById("current").innerHTML="없음";
     } 
 });
-firebase.database().ref('data/0').orderByValue().once('value').then(function(snapshot){console.log(snapshot.val())})
 firebase.database().ref().child('now').on('value', function(snapshot) {
     now_user = snapshot.val().username;  
     now_user_nickname = snapshot.val().nickname; 
@@ -128,7 +127,6 @@ firebase.database().ref().child('add').on('value', function(snapshot) {
 
 
 firebase.database().ref().child('start_status').on('value', function(snapshot) {
-    console.log(snapshot.val().start_status);
     if (snapshot.val().start_status == 1){
         document.all.timer.innerHTML = "";
         start_status = 1;
@@ -176,8 +174,8 @@ firebase.database().ref().child('start_status').on('value', function(snapshot) {
         });
         firebase.database().ref('worst').set({
             username: worst[0].name,
+            time: worst[0].value,
         });
-        console.log(worst[0].name);
     }
 });
 
